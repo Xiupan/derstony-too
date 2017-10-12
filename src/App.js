@@ -1,18 +1,46 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 
 class App extends Component {
+  constructor(props){
+    super(props)
+    this.state = {
+      items: []
+    }
+  }
+  componentDidMount(){
+    fetch(`/Platform/Destiny2/Armory/Search/DestinyInventoryItemDefinition/exotic/`, {
+      headers: {
+        "x-api-key":`${process.env.REACT_APP_API_KEY}`
+      }
+    })
+    .then(results => {
+      // console.log(results)
+      return results.json()
+    }).then(data => {
+      console.log(data.Response.results.results)
+      this.setState({
+        items: data.Response.results.results
+      })
+    })
+  }
   render() {
+    const elements = this.state.items.map(thing => {
+      return(
+        <div key={thing.hash} style={{background:"pink"}}>
+          <h2>{thing.displayProperties.name}</h2>
+          <img src={"https://www.bungie.net"+thing.displayProperties.icon} alt={thing.hash}/>
+        </div>
+      )
+    })
     return (
       <div className="App">
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
+          <h1 className="App-title">Derstony Too!</h1>
         </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+        <div>
+          {elements}
+        </div>
       </div>
     );
   }
