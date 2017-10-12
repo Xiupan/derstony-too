@@ -6,11 +6,11 @@ class App extends Component {
     super(props)
     this.state = {
       items: [],
-      searchQuery: "exotic"
+      searchQuery: "Exotic"
     }
   }
 
-  componentDidMount(){
+  fetchResults = () => {
     fetch(`/Platform/Destiny2/Armory/Search/DestinyInventoryItemDefinition/${this.state.searchQuery}/`, {
       headers: {
         "x-api-key":`${process.env.REACT_APP_API_KEY}`
@@ -20,11 +20,15 @@ class App extends Component {
       // console.log(results)
       return results.json()
     }).then(data => {
-      console.log(data.Response.results.results)
+      console.log(data)
       this.setState({
         items: data.Response.results.results
       })
     })
+  }
+
+  componentDidMount(){
+    this.fetchResults()
   }
 
   handleSearchChange = (event) => {
@@ -35,19 +39,7 @@ class App extends Component {
 
   handleSubmit = (event) => {
     event.preventDefault()
-    fetch(`/Platform/Destiny2/Armory/Search/DestinyInventoryItemDefinition/${this.state.searchQuery}/`, {
-      headers: {
-        "x-api-key":`${process.env.REACT_APP_API_KEY}`
-      }
-    })
-    .then(results => {
-      return results.json()
-    }).then(data => {
-      console.log(data.Response.results.results)
-      this.setState({
-        items: data.Response.results.results
-      })
-    })
+    this.fetchResults()
   }
 
   render() {
