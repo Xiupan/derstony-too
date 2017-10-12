@@ -5,11 +5,13 @@ class App extends Component {
   constructor(props){
     super(props)
     this.state = {
-      items: []
+      items: [],
+      searchQuery: "exotic"
     }
   }
+
   componentDidMount(){
-    fetch(`/Platform/Destiny2/Armory/Search/DestinyInventoryItemDefinition/exotic/`, {
+    fetch(`/Platform/Destiny2/Armory/Search/DestinyInventoryItemDefinition/${this.state.searchQuery}/`, {
       headers: {
         "x-api-key":`${process.env.REACT_APP_API_KEY}`
       }
@@ -24,6 +26,30 @@ class App extends Component {
       })
     })
   }
+
+  handleSearchChange = (event) => {
+    this.setState({
+      searchQuery: event.target.value
+    })
+  }
+
+  handleSubmit = (event) => {
+    event.preventDefault()
+    fetch(`/Platform/Destiny2/Armory/Search/DestinyInventoryItemDefinition/${this.state.searchQuery}/`, {
+      headers: {
+        "x-api-key":`${process.env.REACT_APP_API_KEY}`
+      }
+    })
+    .then(results => {
+      return results.json()
+    }).then(data => {
+      console.log(data.Response.results.results)
+      this.setState({
+        items: data.Response.results.results
+      })
+    })
+  }
+
   render() {
     const elements = this.state.items.map(thing => {
       return(
@@ -38,6 +64,9 @@ class App extends Component {
         <header className="App-header">
           <h1 className="App-title">Derstony Too!</h1>
         </header>
+        <form onSubmit={this.handleSubmit}>
+          <input type="text" onChange={this.handleSearchChange} placeholder="Search Derstony Too Items" value={this.state.value}/>
+        </form>
         <div>
           {elements}
         </div>
